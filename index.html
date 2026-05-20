@@ -3,17 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Loader Cat Embed</title>
+    <title>Loader Cat</title>
     <style>
-      :root {
-        color-scheme: light;
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background: #f6f1e8;
-        color: #1d2320;
-      }
-
       * {
         box-sizing: border-box;
       }
@@ -21,140 +12,19 @@
       body {
         margin: 0;
         min-height: 100vh;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(246, 241, 232, 0.55)),
-          #f6f1e8;
-      }
-
-      main {
-        width: min(100%, 430px);
-        min-height: 140vh;
-        margin: 0 auto;
-        padding: max(26px, env(safe-area-inset-top)) 22px
-          max(34px, env(safe-area-inset-bottom));
-      }
-
-      .copy-block {
-        display: grid;
-        gap: 14px;
-      }
-
-      .eyebrow {
-        margin: 0;
-        color: #6b5d4b;
-        font-size: 0.78rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      h1,
-      h2 {
-        margin: 0;
-        color: #14211b;
-        font-weight: 760;
-        line-height: 1.05;
-        letter-spacing: 0;
-      }
-
-      h1 {
-        max-width: 11ch;
-        font-size: clamp(2.35rem, 16vw, 4.2rem);
-      }
-
-      h2 {
-        font-size: 2rem;
-      }
-
-      p {
-        margin: 0;
-        color: #49544e;
-        font-size: 1rem;
-        line-height: 1.65;
-      }
-
-      .lede {
-        font-size: 1.08rem;
-      }
-
-      .animation-wrap {
         display: grid;
         place-items: center;
-        min-height: 42vh;
-        margin: 34px 0 40px;
-        padding: 22px 8px;
+        background: #f6f1e8;
       }
 
       #loader-cat {
         width: min(78vw, 280px);
         aspect-ratio: 280 / 200;
       }
-
-      .details {
-        display: grid;
-        gap: 18px;
-        padding-bottom: 22vh;
-      }
-
-      .detail-row {
-        border-top: 1px solid rgba(29, 35, 32, 0.14);
-        padding-top: 16px;
-      }
-
-      .detail-row strong {
-        display: block;
-        margin-bottom: 6px;
-        color: #16221c;
-        font-size: 0.95rem;
-      }
     </style>
   </head>
   <body>
-    <main>
-      <section class="copy-block" aria-labelledby="page-title">
-        <p class="eyebrow">Mobile preview</p>
-        <h1 id="page-title">Tiny pause, soft landing.</h1>
-        <p class="lede">
-          A short stretch of placeholder copy gives the embed some room to breathe before the
-          loading animation appears in the center of the mobile layout.
-        </p>
-        <p>
-          This area can hold status text, onboarding copy, or a calm message while the app prepares
-          the next step.
-        </p>
-      </section>
-
-      <section class="animation-wrap" aria-label="Loading animation">
-        <div id="loader-cat"></div>
-      </section>
-
-      <section class="details" aria-labelledby="detail-title">
-        <div class="copy-block">
-          <p class="eyebrow">Still loading</p>
-          <h2 id="detail-title">More vertical content.</h2>
-          <p>
-            The lower section adds enough natural height for a portrait mobile screen, making the
-            page taller than it is wide and easy to test inside a webview.
-          </p>
-        </div>
-
-        <div class="detail-row">
-          <strong>Random note</strong>
-          <p>
-            Fresh coffee, quiet keyboards, and a neatly looping cat keep the waiting state friendly
-            without taking over the interface.
-          </p>
-        </div>
-
-        <div class="detail-row">
-          <strong>Another note</strong>
-          <p>
-            Replace this copy with real app content when the loading moment needs product-specific
-            messaging.
-          </p>
-        </div>
-      </section>
-    </main>
+    <div id="loader-cat"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
     <script>
