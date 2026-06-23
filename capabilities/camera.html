@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WebView · Camera</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Camera</h1>
+    <p class="subtitle" data-bridge-status>Tests the <code>camera</code> capability via <code>getUserMedia</code>.</p>
+
+    <video id="preview" autoplay playsinline muted></video>
+    <ul class="rows"></ul>
+
+    <div class="actions">
+      <button id="start">Start camera</button>
+      <button id="stop">Stop</button>
+    </div>
+
+    <script src="rc-bridge.js"></script>
+    <script>
+      let stream = null;
+      const video = document.getElementById("preview");
+      const row = RC.addRow("Camera stream", "pending", "Tap “Start camera”. Requires a real device — the simulator has no camera.");
+
+      async function start() {
+        row.set("pending", "Requesting camera…");
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = stream;
+          const track = stream.getVideoTracks()[0];
+          row.set("pass", "Granted · " + (track ? track.label || "camera active" : "camera active"));
+        } catch (e) {
+          // NotAllowedError when the capability is denied; NotFoundError on a device with no camera.
+          row.set("fail", (e && e.name ? e.name + ": " : "") + (e && e.message ? e.message : e));
+        }
+      }
+
+      function stop() {
+        if (stream) {
+          stream.getTracks().forEach((t) => t.stop());
+          stream = null;
+          video.srcObject = null;
+          row.set("info", "Stopped");
+        }
+      }
+
+      document.getElementById("start").addEventListener("click", start);
+      document.getElementById("stop").addEventListener("click", stop);
+      window.addEventListener("DOMContentLoaded", start);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WebView · Clipboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Clipboard</h1>
+    <p class="subtitle" data-bridge-status>
+      Tests <code>clipboard_write</code> and <code>clipboard_read</code>.
+    </p>
+
+    <ul class="rows"></ul>
+
+    <div class="actions">
+      <button id="write">Copy text</button>
+      <button id="read">Read text</button>
+    </div>
+
+    <script src="rc-bridge.js"></script>
+    <script>
+      const writeRow = RC.addRow("Write (clipboard_write)", "pending", "Tap “Copy text”.");
+      const readRow = RC.addRow(
+        "Read (clipboard_read)",
+        "info",
+        "Note: the SDK does not currently enforce clipboard_read, so this may succeed even when denied."
+      );
+
+      document.getElementById("write").addEventListener("click", async () => {
+        const payload = "RevenueCat clipboard test · " + new Date().toISOString();
+        writeRow.set("pending", "Writing…");
+        try {
+          await navigator.clipboard.writeText(payload);
+          writeRow.set("pass", "Wrote: " + payload);
+        } catch (e) {
+          writeRow.set("fail", (e && e.name ? e.name + ": " : "") + (e && e.message ? e.message : e));
+        }
+      });
+
+      document.getElementById("read").addEventListener("click", async () => {
+        readRow.set("pending", "Reading…");
+        try {
+          const text = await navigator.clipboard.readText();
+          readRow.set("pass", "Read: " + (text || "(empty)"));
+        } catch (e) {
+          readRow.set("fail", (e && e.name ? e.name + ": " : "") + (e && e.message ? e.message : e));
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WebView · Geolocation</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Geolocation</h1>
+    <p class="subtitle" data-bridge-status>
+      Tests the <code>geolocation</code> capability via <code>navigator.geolocation</code>.
+    </p>
+
+    <ul class="rows"></ul>
+
+    <div class="actions">
+      <button id="locate">Get current position</button>
+    </div>
+
+    <script src="rc-bridge.js"></script>
+    <script>
+      const row = RC.addRow(
+        "Current position",
+        "pending",
+        "Requesting… (in the simulator, set Features → Location → a custom/preset location)."
+      );
+
+      function locate() {
+        row.set("pending", "Requesting location…");
+        if (!navigator.geolocation) {
+          row.set("fail", "navigator.geolocation is unavailable");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const c = pos.coords;
+            row.set(
+              "pass",
+              "lat " + c.latitude.toFixed(5) + ", lon " + c.longitude.toFixed(5) + " · ±" + Math.round(c.accuracy) + "m"
+            );
+          },
+          (err) => {
+            // When the capability is denied the SDK doesn't inject the bridge, so requests error out.
+            row.set("fail", "Error " + err.code + ": " + err.message);
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+        );
+      }
+
+      document.getElementById("locate").addEventListener("click", locate);
+      window.addEventListener("DOMContentLoaded", locate);
+    </script>
+  </body>
+</html>

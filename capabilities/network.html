@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WebView · Network access</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Network access</h1>
+    <p class="subtitle" data-bridge-status>Tests the <code>network_access.allowed_domains</code> capability.</p>
+
+    <ul class="rows"></ul>
+
+    <div class="actions">
+      <button id="retry">Run again</button>
+    </div>
+
+    <script src="rc-bridge.js"></script>
+    <script>
+      // Same-origin request: always allowed (the page's own host is implicitly reachable, and the
+      // "restricted" sample whitelists alexrepty.github.io). External request: only succeeds when the
+      // host is allowed by the capability (or no network_access restriction is declared).
+      const SAME_ORIGIN = "rc-bridge.js?cacheBust=";
+      const EXTERNAL = "https://api.github.com/zen";
+
+      async function probe(row, url, label) {
+        row.set("pending", "Requesting " + label + "…");
+        const started = Date.now();
+        try {
+          const res = await fetch(url, { cache: "no-store" });
+          const ms = Date.now() - started;
+          if (res.ok) {
+            row.set("pass", "Allowed · HTTP " + res.status + " · " + ms + "ms");
+          } else {
+            row.set("info", "Reachable but HTTP " + res.status + " · " + ms + "ms");
+          }
+        } catch (e) {
+          // A blocked request rejects (typically a TypeError "Load failed").
+          row.set("fail", "Blocked · " + (e && e.message ? e.message : e));
+        }
+      }
+
+      function run() {
+        document.querySelector(".rows").innerHTML = "";
+        const sameOrigin = RC.addRow("Same-origin (alexrepty.github.io)", "pending", "");
+        const external = RC.addRow("External (api.github.com)", "pending", "");
+        probe(sameOrigin, SAME_ORIGIN + Date.now(), "same-origin");
+        probe(external, EXTERNAL, "external");
+      }
+
+      document.getElementById("retry").addEventListener("click", run);
+      window.addEventListener("DOMContentLoaded", run);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>WebView · JS bridge</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>JS bridge</h1>
+    <p class="subtitle" data-bridge-status>
+      Tests the protocol v1 web↔native bridge (variables, step-complete, error).
+    </p>
+
+    <ul class="rows"></ul>
+
+    <div class="actions">
+      <button id="vars">Request variables</button>
+      <button id="complete">Send step-complete</button>
+      <button id="error">Send error</button>
+    </div>
+
+    <h1>Received from native</h1>
+    <pre id="log">(none yet)</pre>
+
+    <script src="rc-bridge.js"></script>
+    <script>
+      const localeRow = RC.addRow("locale", "pending", "—");
+      const schemeRow = RC.addRow("color_scheme", "pending", "—");
+      const customRow = RC.addRow("custom", "pending", "Set values in the tester’s { } editor");
+      const completeRow = RC.addRow("rc:step-complete", "info", "Tap to post sample responses");
+      const errorRow = RC.addRow("rc:error", "info", "Tap to post a sample error");
+      const log = document.getElementById("log");
+
+      function logMessage(message) {
+        const stamp = new Date().toLocaleTimeString();
+        const text = stamp + "  " + JSON.stringify(message);
+        log.textContent = log.textContent === "(none yet)" ? text : log.textContent + "\n" + text;
+      }
+
+      // Native -> web messages (the SDK replies to rc:request-variables with rc:variables).
+      RC.onMessage(function (message) {
+        logMessage(message);
+        if (message && message.type === "rc:variables" && message.variables) {
+          const v = message.variables;
+          localeRow.set("pass", v.locale != null ? String(v.locale) : "(missing)");
+          schemeRow.set("pass", v.color_scheme != null ? String(v.color_scheme) : "(missing)");
+          customRow.set("pass", v.custom ? JSON.stringify(v.custom) : "{}");
+        }
+      });
+
+      function requestVariables() {
+        if (!RC.bridgeAvailable) {
+          localeRow.set("fail", "Bridge not available (open inside the app)");
+          schemeRow.set("fail", "Bridge not available");
+          customRow.set("fail", "Bridge not available");
+          return;
+        }
+        localeRow.set("pending", "Requesting…");
+        schemeRow.set("pending", "Requesting…");
+        customRow.set("pending", "Requesting…");
+        RC.post("rc:request-variables");
+      }
+
+      document.getElementById("vars").addEventListener("click", requestVariables);
+
+      document.getElementById("complete").addEventListener("click", function () {
+        const ok = RC.post("rc:step-complete", {
+          responses: { selected_plan: "annual", accepted_terms: true, source: "bridge.html" }
+        });
+        completeRow.set(ok ? "pass" : "fail", ok ? "Posted responses" : "Bridge not available");
+      });
+
+      document.getElementById("error").addEventListener("click", function () {
+        const ok = RC.post("rc:error", { error: "Sample error from bridge.html" });
+        errorRow.set(ok ? "pass" : "fail", ok ? "Posted error" : "Bridge not available");
+      });
+
+      window.addEventListener("DOMContentLoaded", requestVariables);
+    </script>
+  </body>
+</html>
